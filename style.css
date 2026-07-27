@@ -270,6 +270,7 @@ h2{ font-size:clamp(1.6rem, 3vw, 2.1rem); margin:0; font-weight:600; }
 .social-row a{
   width:38px; height:38px; border-radius:10px; border:1px solid var(--line);
   display:flex; align-items:center; justify-content:center;
+  color:var(--muted); transition:border-color .15s, color .15s;
 }
 .social-row a:hover{ border-color:var(--primary); color:var(--primary); }
 
