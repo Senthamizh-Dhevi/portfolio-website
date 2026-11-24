@@ -25,7 +25,7 @@ if (revealEls.length) {
 }
 
 // Stagger groups (grids) fade in together once the group enters view
-const groupSelectors = ['.project-grid', '.certificates-grid', '.skills-extra', '.skills-badges'];
+const groupSelectors = ['.project-grid', '.certificates-grid', '.skills-extra'];
 const groupEls = document.querySelectorAll(groupSelectors.join(','));
 
 if (groupEls.length) {
@@ -57,84 +57,21 @@ if (navToggle && mainNav) {
   });
 }
 
-// Skill badges: automatically resolve each skill name to its technology icon.
-// Add a new skill anywhere with data-skill="Name" and it will pick up an icon
-// automatically — no manual icon lookup needed per skill.
-const skillIconSlugs = {
-  html: 'html5',
-  css: 'css3',
-  javascript: 'javascript',
-  js: 'javascript',
-  react: 'react',
-  java: 'java',
-  mysql: 'mysql',
-  git: 'git',
-  github: 'github',
-  figma: 'figma',
-  canva: 'canva',
-  nodejs: 'nodedotjs',
-  node: 'nodedotjs'
-};
+// Animate skill bars into view
+const bars = document.querySelectorAll('.bar-fill');
+if (bars.length) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const bar = entry.target;
+        bar.style.width = bar.dataset.width + '%';
+        observer.unobserve(bar);
+      }
+    });
+  }, { threshold: 0.3 });
 
-document.querySelectorAll('.skill-badge[data-skill]').forEach(badge => {
-  const name = badge.dataset.skill;
-  const key = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const slug = skillIconSlugs[key];
-
-  const iconWrap = document.createElement('div');
-  iconWrap.className = 'badge-icon';
-
-  if (slug) {
-    const img = document.createElement('img');
-    img.src = `https://cdn.simpleicons.org/${slug}/ffffff`;
-    img.alt = name;
-    img.width = 30;
-    img.height = 30;
-    img.loading = 'lazy';
-    img.onerror = () => { iconWrap.textContent = name.charAt(0).toUpperCase(); };
-    iconWrap.appendChild(img);
-  } else {
-    // Unknown skill name: fall back to its first letter rather than a broken icon
-    iconWrap.textContent = name.charAt(0).toUpperCase();
-  }
-
-  const label = document.createElement('h4');
-  label.textContent = name;
-
-  badge.appendChild(iconWrap);
-  badge.appendChild(label);
-});
-
-// Skill icons: auto-detect each skill's name and inject a matching symbol.
-// Add a new skill row anywhere and, if its name matches a key below
-// (or partially matches, e.g. "Git" inside "Git & GitHub"), its icon
-// appears automatically — no markup changes needed.
-const SKILL_ICONS = {
-  html: '<svg viewBox="0 0 24 24" fill="none" stroke="#e34f26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 4 2 12 8 20"/><polyline points="16 4 22 12 16 20"/></svg>',
-  css: '<svg viewBox="0 0 24 24" fill="none" stroke="#2965f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 8 5 11.5 5 15a7 7 0 0014 0c0-3.5-3-7-7-13z"/></svg>',
-  javascript: '<svg viewBox="0 0 24 24" fill="none" stroke="#d7b600" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4c-2 0-3 1-3 3v3c0 1-.5 2-2 2 1.5 0 2 1 2 2v3c0 2 1 3 3 3"/><path d="M16 4c2 0 3 1 3 3v3c0 1 .5 2 2 2-1.5 0-2 1-2 2v3c0 2-1 3-3 3"/></svg>',
-  java: '<svg viewBox="0 0 24 24" fill="none" stroke="#c74634" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h13v5a5 5 0 01-5 5H9a5 5 0 01-5-5V9z"/><path d="M17 10h1.5a2.5 2.5 0 010 5H17"/><path d="M8 3c-.5 1 .5 1.5 0 2.5M12 3c-.5 1 .5 1.5 0 2.5"/></svg>',
-  mysql: '<svg viewBox="0 0 24 24" fill="none" stroke="#00758f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>',
-  git: '<svg viewBox="0 0 24 24" fill="none" stroke="#f05033" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="6" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M18 9a9 9 0 01-9 9"/><circle cx="18" cy="6" r="3"/></svg>',
-  github: '<svg viewBox="0 0 24 24" fill="none" stroke="#f05033" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="6" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M18 9a9 9 0 01-9 9"/><circle cx="18" cy="6" r="3"/></svg>',
-  figma: '<svg viewBox="0 0 24 24" fill="none" stroke="#a259ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><circle cx="17" cy="17" r="4"/></svg>',
-  canva: '<svg viewBox="0 0 24 24" fill="none" stroke="#a259ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><circle cx="17" cy="17" r="4"/></svg>',
-  default: '<svg viewBox="0 0 24 24" fill="none" stroke="#5b6478" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 4 2 12 8 20"/><polyline points="16 4 22 12 16 20"/></svg>'
-};
-
-function findSkillIcon(name) {
-  const key = name.toLowerCase().trim();
-  if (SKILL_ICONS[key]) return SKILL_ICONS[key];
-  const match = Object.keys(SKILL_ICONS).find(k => k !== 'default' && key.includes(k));
-  return match ? SKILL_ICONS[match] : SKILL_ICONS.default;
+  bars.forEach(bar => observer.observe(bar));
 }
-
-document.querySelectorAll('.skill-top span:first-child').forEach(nameEl => {
-  const iconSpan = document.createElement('span');
-  iconSpan.className = 'skill-icon';
-  iconSpan.innerHTML = findSkillIcon(nameEl.textContent);
-  nameEl.prepend(iconSpan);
-});
 
 // Certificates: filter by category
 const filterBtns = document.querySelectorAll('.filter-btn');
@@ -176,7 +113,7 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 
 // Card tilt: gentle 3D tilt that follows the cursor
 if (!prefersReducedMotion) {
-  const tiltCards = document.querySelectorAll('.project-card, .skill-card, .certificate-card, .badge-card');
+  const tiltCards = document.querySelectorAll('.project-card, .skill-card, .certificate-card');
   tiltCards.forEach(card => {
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();
@@ -221,3 +158,153 @@ if (form) {
     setTimeout(() => { btn.textContent = original; }, 2500);
   });
 }
+/* =====================================================
+   ADDITIONS — paste at the very END of script.js
+===================================================== */
+
+// ---- Certificates: placeholders, filter counts, lightbox ----
+(function () {
+  const cards = document.querySelectorAll('.certificate-card');
+  if (!cards.length) return;
+
+  // Category labels come from the filter buttons themselves
+  const labels = {};
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    if (b.dataset.filter && b.dataset.filter !== 'all') labels[b.dataset.filter] = b.textContent.trim();
+  });
+  const icons = { course: '🎓', hackathon: '🏆', workshop: '🛠️', internship: '💼', badge: '🏅', other: '📜' };
+
+  function makePlaceholder(cat) {
+    const ph = document.createElement('div');
+    ph.className = 'certificate-image is-placeholder';
+    ph.innerHTML = '<span class="ph-icon">' + (icons[cat] || '📜') + '</span>' +
+                   '<span class="ph-label">' + (labels[cat] || 'Certificate') + '</span>';
+    return ph;
+  }
+
+  cards.forEach(card => {
+    const cat = card.dataset.category;
+    let box = card.querySelector('.certificate-image');
+
+    // Card has no image box at all -> add one so every card has the same height
+    if (!box) { card.prepend(makePlaceholder(cat)); return; }
+
+    const img = box.querySelector('img');
+    const swap = () => box.replaceWith(makePlaceholder(cat));
+    if (!img) { swap(); return; }
+    img.addEventListener('error', swap);
+    if (img.complete && img.naturalWidth === 0) swap();
+  });
+
+  // Lightbox: click a certificate image to view it larger
+  const box = document.createElement('div');
+  box.className = 'lightbox';
+  box.innerHTML = '<button class="lightbox-close" aria-label="Close">×</button><img alt="">';
+  document.body.appendChild(box);
+  const big = box.querySelector('img');
+  const close = () => box.classList.remove('open');
+
+  document.addEventListener('click', e => {
+    const img = e.target.closest('.certificate-image img');
+    if (img) { big.src = img.src; big.alt = img.alt; box.classList.add('open'); return; }
+    if (e.target === box || e.target.closest('.lightbox-close')) close();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+})();
+
+// ---- Back-to-top button (all pages) ----
+(function () {
+  const btn = document.createElement('button');
+  btn.className = 'to-top';
+  btn.setAttribute('aria-label', 'Back to top');
+  btn.textContent = '↑';
+  document.body.appendChild(btn);
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('show', window.scrollY > 500);
+  }, { passive: true });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+})();
+
+/* =====================================================
+   ADDITIONS 2 — paste at the very END of script.js
+===================================================== */
+
+// ---- Certificates: rebuild every card in one consistent structure ----
+(function () {
+  const cards = document.querySelectorAll('.certificates-grid .certificate-card');
+  if (!cards.length) return;
+
+  const labels = {};
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    const f = b.dataset.filter;
+    if (f && f !== 'all') labels[f] = b.childNodes[0].textContent.trim();
+  });
+  const icons = { course: '🎓', hackathon: '🏆', workshop: '🛠️', internship: '💼', badge: '🏅', other: '📜' };
+  const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  cards.forEach(card => {
+    if (card.dataset.rebuilt) return;
+    const cat = card.dataset.category || 'other';
+    const img = card.querySelector('img');
+    const issuer = (card.querySelector('.certificate-issuer') || {}).textContent || '';
+    const title = (card.querySelector('h3') || {}).textContent || '';
+    const desc = (card.querySelector('.certificate-content p') || card.querySelector('p') || {}).textContent || '';
+    const footer = card.querySelector('.certificate-footer');
+    const date = footer && footer.querySelector('span') ? footer.querySelector('span').textContent : '';
+    const link = (footer && footer.querySelector('a')) || card.querySelector('a');
+    const href = link ? link.getAttribute('href') : '';
+    const src = img ? img.getAttribute('src') : '';
+    const alt = img ? img.getAttribute('alt') || title : title;
+    const label = labels[cat] || 'Certificate';
+
+    card.innerHTML =
+      '<div class="certificate-image">' +
+        (src ? '<img src="' + esc(src) + '" alt="' + esc(alt.trim()) + '" loading="lazy">' : '') +
+        '<span class="certificate-category">' + esc(label) + '</span>' +
+      '</div>' +
+      '<div class="certificate-content">' +
+        '<span class="certificate-issuer">' + esc(issuer.trim()) + '</span>' +
+        '<h3>' + esc(title.trim()) + '</h3>' +
+        '<p>' + esc(desc.trim()) + '</p>' +
+        '<div class="certificate-footer"><span>' + esc(date.trim()) + '</span>' +
+          (href ? '<a href="' + esc(href) + '" target="_blank" rel="noopener">View Certificate ↗</a>' : '') +
+        '</div>' +
+      '</div>';
+    card.dataset.rebuilt = '1';
+
+    // No image, or image failed to load -> uniform placeholder
+    const box = card.querySelector('.certificate-image');
+    const swap = () => {
+      box.classList.add('is-placeholder');
+      const i = box.querySelector('img'); if (i) i.remove();
+      if (!box.querySelector('.ph-icon')) {
+        box.insertAdjacentHTML('afterbegin',
+          '<span class="ph-icon">' + (icons[cat] || '📜') + '</span>');
+      }
+    };
+    const im = box.querySelector('img');
+    if (!im) swap();
+    else {
+      im.addEventListener('error', swap);
+      if (im.complete && im.naturalWidth === 0) swap();
+    }
+  });
+})();
+
+// ---- Skills: animate the meters when they scroll into view ----
+(function () {
+  const groups = document.querySelectorAll('.skill-group');
+  if (!groups.length) return;
+  const fill = g => g.querySelectorAll('.meter-fill').forEach((m, i) => {
+    m.style.transitionDelay = (i * 120) + 'ms';
+    m.style.width = m.dataset.level + '%';
+  });
+  if (!('IntersectionObserver' in window) ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    groups.forEach(fill); return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { fill(e.target); io.unobserve(e.target); } });
+  }, { threshold: 0.25 });
+  groups.forEach(g => io.observe(g));
+})();
